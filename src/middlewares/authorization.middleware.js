@@ -16,7 +16,7 @@ const auth = async (req, res, next) => {
     ).rows[0];
     delete user.password;
 
-    res.locals.session = data.userId;
+    res.locals.session = data;
     res.locals.user = user;
     next();
   } catch (error) {

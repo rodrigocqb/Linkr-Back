@@ -1,34 +1,32 @@
-import connection from "../database/database.js";
+import { hashtagsRepository } from "../repositories/hashtags.repository.js";
 
 const addHashtags = async (req, res, next) => {
-  const { message } = res.locals.body;
+  const { description } = res.locals.body;
 
   try {
-    const hashtagArray = checkHashtag(message);
+    const hashtagArray = checkHashtag(description);
     const hashtagIdArray = [];
 
-    hashtagArray.forEach(async (hashtag) => {
-      const hashtagName = await connection.query(
-        `SELECT * FROM hashtags WHERE name = $1;`,
-        [hashtag]
-      );
+    for (let i = 0; i < hashtagArray.length; i++) {
+      const hashtag = hashtagArray[i];
+      const hashtagName = await hashtagsRepository.getHashtagByName(hashtag);
+
       if (hashtagName.rowCount === 0) {
-        await connection.query(`INSERT INTO hashtags (name) VALUES ($1);`, [
-          hashtag,
-        ]);
+        await hashtagsRepository.insertNewHashtag(hashtag);
+
         const currentHashtag = (
-          await connection.query(`SELECT * FROM hashtags WHERE name = $1`, [
-            hashtag,
-          ])
+          await hashtagsRepository.getHashtagByName(hashtag)
         ).rows[0];
+
         hashtagIdArray.push(currentHashtag.id);
       } else {
-        hashtagIdArray.push(hashtagName.rows[0].id);
+        const hashtagId = hashtagName.rows[0].id;
+        hashtagIdArray.push(hashtagId);
       }
-    });
+    }
 
     res.locals.hashtags = [...hashtagIdArray];
-    next();
+    return next();
   } catch (error) {
     res.status(400).send({ error });
   }
@@ -44,3 +42,5 @@ const checkHashtag = (text) => {
   );
   return wordsFiltered.map((word) => word.slice(-(word.length - 1)));
 };
+
+export { addHashtags };
