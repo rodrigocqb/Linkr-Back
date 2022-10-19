@@ -7,7 +7,6 @@ import * as usersRepository from "../repositories/users.repository.js";
 
 async function getUserPosts(req, res) {
   const { id } = req.params;
-  // middleware de autenticacao
   try {
     const user = (await usersRepository.getUserById(id)).rows[0];
     if (!user) {
