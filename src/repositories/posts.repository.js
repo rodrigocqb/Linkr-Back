@@ -21,10 +21,27 @@ const insertPostHashtag = async ({ postId, hashtagId }) => {
   );
 };
 
+const getPosts = async () => {
+  return connection.query(`SELECT t1.id AS user_id, t1.username, t1.image, 
+  posts.id, posts.link, posts.description,
+  ARRAY_AGG(t2.username ORDER BY likes.id DESC) AS likes
+  FROM posts 
+  JOIN users AS t1
+  ON posts.user_id = t1.id
+  JOIN likes
+  ON posts.id = likes.post_id
+  JOIN users AS t2
+  ON likes.user_id = t2.id
+  GROUP BY t1.id, posts.id 
+  ORDER BY posts.id DESC
+  LIMIT 20;`);
+};
+
 const postRepository = {
   insertPost,
   getUsersPostsByUserId,
   insertPostHashtag,
+  getPosts,
 };
 
 export { postRepository };
