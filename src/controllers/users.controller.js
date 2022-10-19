@@ -8,10 +8,10 @@ async function getUserPosts(req, res) {
   // middleware de autenticacao tb
   try {
     const posts = (await usersRepository.getUserPostsById(id)).rows;
-    return res.status(200).send(posts);
+    return okResponse(res, posts);
   } catch (error) {
     console.log(error.message);
-    return res.status(500).send({ error: "Server error" });
+    return serverError(res);
   }
 }
 
