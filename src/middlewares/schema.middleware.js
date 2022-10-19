@@ -1,4 +1,4 @@
-import { unprocessableEntityResponse } from "../helpers/controllers.helper";
+import { unprocessableEntityResponse } from "../helpers/controllers.helper.js";
 
 const schemaMiddleware = (schema) => {
   return (req, res, next) => {
