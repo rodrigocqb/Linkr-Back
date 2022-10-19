@@ -9,15 +9,10 @@ import { auth } from "../middlewares/authorization.middleware.js";
 import { schemaMiddleware } from "../middlewares/schema.middleware.js";
 import { postSchema } from "../schemas/post.schema.js";
 
-const postRouter = Router();
+const router = Router();
 
-postRouter.post(
-  "/posts",
-  auth,
-  schemaMiddleware(postSchema),
-  addHashtags,
-  newPost
-);
-postRouter.post("/test/signin", testUser);
-postRouter.post("/test/login", tesLogin);
-export { postRouter };
+router.post("/posts", auth, schemaMiddleware(postSchema), addHashtags, newPost);
+router.post("/test/signin", testUser);
+router.post("/test/login", tesLogin);
+
+export default router;

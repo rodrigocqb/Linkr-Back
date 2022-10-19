@@ -5,7 +5,7 @@ import { postRepository } from "../repositories/posts.repository.js";
 
 const newPost = async (req, res) => {
   const { link, description } = res.locals.body;
-  const { userId } = res.locals.session;
+  const userId = res.locals.session;
   const { hashtags } = res.locals;
 
   try {
