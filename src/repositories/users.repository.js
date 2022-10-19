@@ -1,5 +1,13 @@
 import connection from "../database/database.js";
 
+async function getUserById(id) {
+  return connection.query(
+    `SELECT id, username, image
+    FROM users WHERE id = $1`,
+    [id]
+  );
+}
+
 async function getUserPostsById(id) {
   return connection.query(
     `SELECT t1.id AS user_id, t1.username, t1.image, 
@@ -18,4 +26,4 @@ async function getUserPostsById(id) {
   );
 }
 
-export { getUserPostsById };
+export { getUserById, getUserPostsById };

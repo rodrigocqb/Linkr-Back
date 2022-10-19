@@ -2,13 +2,15 @@ import * as usersRepository from "../repositories/users.repository.js";
 
 async function getUserPosts(req, res) {
   const { id } = req.params;
-  // colocar um middleware pra buscar primeiro se esse usuario existe
-  // pegar dados do usuario do res.locals e juntar
-  // retornar 404 se nao existir
-  // middleware de autenticacao tb
+  // middleware de autenticacao
   try {
+    const user = (await usersRepository.getUserById(id)).rows[0];
+    if (!user) {
+      return notFoundResponse(res);
+    }
     const posts = (await usersRepository.getUserPostsById(id)).rows;
-    return okResponse(res, posts);
+    user.posts = posts;
+    return okResponse(res, user);
   } catch (error) {
     console.log(error.message);
     return serverError(res);
