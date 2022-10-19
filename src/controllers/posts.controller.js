@@ -2,6 +2,7 @@ import connection from "../database/database.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { postRepository } from "../repositories/posts.repository.js";
+import { okResponse, serverError } from "../helpers/controllers.helper.js";
 
 const newPost = async (req, res) => {
   const { link, description } = res.locals.body;
@@ -29,6 +30,16 @@ const newPost = async (req, res) => {
     return res.status(500).send({ error: "An error." });
   }
 };
+
+async function getTimeline(req, res) {
+  try {
+    const timeline = (await postRepository.getPosts()).rows;
+    return okResponse(res, timeline);
+  } catch (error) {
+    console.log(error.message);
+    serverError(res);
+  }
+}
 
 const testUser = async (req, res) => {
   const { email, username, password, image } = req.body;
@@ -83,4 +94,4 @@ const tesLogin = async (req, res) => {
   }
 };
 
-export { testUser, tesLogin, newPost };
+export { testUser, tesLogin, newPost, getTimeline };
