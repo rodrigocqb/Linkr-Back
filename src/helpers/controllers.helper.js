@@ -54,3 +54,14 @@ function unprocessableEntityResponse(
 function serverError(res, body = STATUS_TEXT.SERVER_ERROR) {
   return res.status(STATUS_CODE.SERVER_ERROR).send(body);
 }
+
+export {
+  okResponse,
+  createdResponse,
+  noContentResponse,
+  unauthorizedResponse,
+  notFoundResponse,
+  conflictResponse,
+  unprocessableEntityResponse,
+  serverError,
+};
