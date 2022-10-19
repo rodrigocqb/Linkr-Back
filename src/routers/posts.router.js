@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { addHashtags } from "../controllers/hashtag.controller.js";
 import {
   newPost,
   tesLogin,
@@ -10,7 +11,7 @@ import { postSchema } from "../schemas/post.schema.js";
 
 const router = Router();
 
-router.post("/posts", auth, schemaMiddleware(postSchema), newPost);
+router.post("/posts", auth, schemaMiddleware(postSchema), addHashtags, newPost);
 router.post("/test/signin", testUser);
 router.post("/test/login", tesLogin);
 

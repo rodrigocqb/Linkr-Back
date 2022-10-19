@@ -1,11 +1,33 @@
 import connection from "../database/database.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { postRepository } from "../repositories/posts.repository.js";
 
 const newPost = async (req, res) => {
-  const { url, message } = res.locals.body;
-  const { userId } = res.locals.session;
+  const { link, description } = res.locals.body;
+  const userId = res.locals.session;
   const { hashtags } = res.locals;
+
+  try {
+    await postRepository.insertPost({ userId, link, description });
+
+    const post = (await postRepository.getUsersPostsByUserId(userId)).rows[0];
+
+    const postId = post.id;
+    if (hashtags) {
+      hashtags.forEach(async (hashtagId) => {
+        await postRepository.insertPostHashtag({ postId, hashtagId });
+      });
+    }
+    return res.status(201).send({
+      link,
+      description,
+      userId,
+      hashtags,
+    });
+  } catch (error) {
+    return res.status(500).send({ error: "An error." });
+  }
 };
 
 const testUser = async (req, res) => {
