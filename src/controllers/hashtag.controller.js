@@ -1,3 +1,4 @@
+import { serverError } from "../helpers/controllers.helper.js";
 import { hashtagsRepository } from "../repositories/hashtags.repository.js";
 
 const addHashtags = async (req, res, next) => {
@@ -24,11 +25,12 @@ const addHashtags = async (req, res, next) => {
         hashtagIdArray.push(hashtagId);
       }
     }
-
+    const text = filterDescription(description);
+    res.locals.description = text;
     res.locals.hashtags = [...hashtagIdArray];
     return next();
   } catch (error) {
-    res.status(400).send({ error });
+    return serverError(res);
   }
 };
 
@@ -41,6 +43,14 @@ const checkHashtag = (text) => {
       (word.match(/#/g) || []).length === 1
   );
   return wordsFiltered.map((word) => word.slice(-(word.length - 1)));
+};
+
+const filterDescription = (text) => {
+  const words = text.split(" ");
+  const description = words.filter(
+    (word) => !word.includes("#") && (word.match(/#/g) || []).length === 0
+  );
+  return description.join(" ");
 };
 
 export { addHashtags };

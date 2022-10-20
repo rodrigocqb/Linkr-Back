@@ -28,4 +28,11 @@ async function getUserPostsById(id) {
   );
 }
 
-export { getUserById, getUserPostsById };
+async function getUsersByName(search) {
+  return connection.query(
+    `SELECT users.id, users.username, users.image FROM users WHERE LOWER(username) LIKE '%' || LOWER($1) || '%';`,
+    [`${search}`]
+  );
+}
+
+export { getUserById, getUserPostsById, getUsersByName };
