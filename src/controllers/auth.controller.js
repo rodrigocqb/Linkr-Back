@@ -7,6 +7,8 @@ import bcrypt from "bcrypt";
 
 import { getUserByEmail, createUser } from "../repositories/auth.repository.js";
 
+import createUserToken from "../helpers/create-user-token.js";
+
 class AuthController {
 
     static async signup(req, res) {
@@ -75,6 +77,42 @@ class AuthController {
             return res.status(500).json({ message: error });
 
         }
+
+    }
+
+    static async signin(req, res) {
+
+        const { email, password } = req.body;
+
+        // Validações
+        if(!email) return res.status(422).json({
+                message: "O e-mail é obrigatório!"
+            }
+        );
+
+        if(!password) return res.status(422).json({
+                message: "A senha é obrigatória!"
+            }
+        );
+
+        // Verificando a existência do usuário
+        const userExists = await getUserByEmail(email);
+
+        if(!userExists.rows[0]) return res.status(401).json({
+                message: "E-mail não encontrado!"
+            }
+        );
+
+        const user = userExists.rows[0];
+
+        const checkPassword = await bcrypt.compare(password, user.password);
+
+        if(!checkPassword) return res.status(401).json({
+                message: "Senha inválida!"
+            }
+        );
+
+        await createUserToken(user, req, res);
 
     }
 
