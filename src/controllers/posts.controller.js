@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { postRepository } from "../repositories/posts.repository.js";
 import { okResponse, serverError } from "../helpers/controllers.helper.js";
+import { hashtagsRepository } from "../repositories/hashtags.repository.js";
 
 const newPost = async (req, res) => {
   const { link, description } = res.locals.body;
@@ -33,7 +34,11 @@ const newPost = async (req, res) => {
 
 async function getTimeline(req, res) {
   try {
-    const timeline = (await postRepository.getPosts()).rows;
+    const posts = (await postRepository.getPosts()).rows;
+    const timeline =await Promise.all(posts.map(async(post)=>
+    {const hashtags = ((await hashtagsRepository.getHashtagByIdPost(post.id)).rows[0]?.hashtag); 
+    return  {...post,"hashtags": hashtags}}));
+    
     return okResponse(res, timeline);
   } catch (error) {
     console.log(error.message);

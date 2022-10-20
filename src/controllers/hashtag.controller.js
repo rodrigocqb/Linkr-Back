@@ -43,4 +43,5 @@ const checkHashtag = (text) => {
   return wordsFiltered.map((word) => word.slice(-(word.length - 1)));
 };
 
+
 export { addHashtags };
