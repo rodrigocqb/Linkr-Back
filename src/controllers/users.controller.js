@@ -21,4 +21,15 @@ async function getUserPosts(req, res) {
   }
 }
 
-export { getUserPosts };
+async function getUsersBySearch(req, res) {
+  const { name } = req.params;
+  try {
+    const allUsers = (await usersRepository.getUsersByName(name)).rows;
+    return okResponse(res, allUsers);
+  } catch (error) {
+    console.log(error.message);
+    return serverError(res);
+  }
+}
+
+export { getUserPosts, getUsersBySearch };
