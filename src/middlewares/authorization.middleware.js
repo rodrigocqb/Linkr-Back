@@ -11,7 +11,7 @@ const auth = async (req, res, next) => {
 
   let userId;
   try {
-    userId = jwt.verify(token, process.env.JWT_SECRET).userId;
+    userId = jwt.verify(token, process.env.JWT_SECRET).id;
   } catch (error) {
     await authRepository.updateExpiredSession(token);
     return unauthorizedResponse(res);
