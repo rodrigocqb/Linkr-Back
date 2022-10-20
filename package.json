@@ -1,7 +1,6 @@
 {
   "name": "linkr-back",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -24,5 +23,14 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rodrigocqb/Linkr-Back.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rodrigocqb/Linkr-Back/issues"
+  },
+  "homepage": "https://github.com/rodrigocqb/Linkr-Back#readme",
+  "description": ""
 }

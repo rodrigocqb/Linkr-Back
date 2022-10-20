@@ -23,9 +23,18 @@ async function getUserPostsById(id) {
     LEFT JOIN users AS t2
     ON likes.user_id = t2.id
     WHERE t1.id = $1
-    GROUP BY t1.id, posts.id;`,
+    GROUP BY t1.id, posts.id
+    ORDER BY posts.id DESC
+    LIMIT 20;`,
     [id]
   );
 }
 
-export { getUserById, getUserPostsById };
+async function getUsersByName(search) {
+  return connection.query(
+    `SELECT users.id, users.username, users.image FROM users WHERE LOWER(username) LIKE '%' || LOWER($1) || '%';`,
+    [`${search}`]
+  );
+}
+
+export { getUserById, getUserPostsById, getUsersByName };

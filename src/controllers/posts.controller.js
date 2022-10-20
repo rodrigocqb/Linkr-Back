@@ -2,10 +2,16 @@ import connection from "../database/database.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { postRepository } from "../repositories/posts.repository.js";
-import { okResponse, serverError } from "../helpers/controllers.helper.js";
+import {
+  createdResponse,
+  okResponse,
+  serverError,
+} from "../helpers/controllers.helper.js";
+import { hashtagsRepository } from "../repositories/hashtags.repository.js";
 
 const newPost = async (req, res) => {
-  const { link, description } = res.locals.body;
+  const { link } = res.locals.body;
+  const { description } = res.locals;
   const userId = res.locals.session;
   const { hashtags } = res.locals;
 
@@ -20,24 +26,27 @@ const newPost = async (req, res) => {
         await postRepository.insertPostHashtag({ postId, hashtagId });
       });
     }
-    return res.status(201).send({
-      link,
-      description,
-      userId,
-      hashtags,
-    });
+    return createdResponse(res, { link, description, userId, hashtags });
   } catch (error) {
-    return res.status(500).send({ error: "An error." });
+    return serverError(res);
   }
 };
 
 async function getTimeline(req, res) {
   try {
-    const timeline = (await postRepository.getPosts()).rows;
+    const posts = (await postRepository.getPosts()).rows;
+    const timeline = await Promise.all(
+      posts.map(async (post) => {
+        const hashtags = (await hashtagsRepository.getHashtagByIdPost(post.id))
+          .rows[0]?.hashtag;
+        return { ...post, hashtags: hashtags };
+      })
+    );
+
     return okResponse(res, timeline);
   } catch (error) {
     console.log(error.message);
-    serverError(res);
+    return serverError(res);
   }
 }
 
@@ -80,7 +89,7 @@ const tesLogin = async (req, res) => {
       return res.status(401).send({ error: "Invalid email or password." });
     }
 
-    const data = { userId: user.id };
+    const data = { id: user.id };
     const token = jwt.sign(data, process.env.JWT_SECRET);
 
     await connection.query(
