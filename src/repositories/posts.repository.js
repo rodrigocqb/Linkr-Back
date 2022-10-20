@@ -39,11 +39,18 @@ const getPosts = async () => {
   LIMIT 20;`);
 };
 
+const editPostById = async ({ id, description }) => {
+  return await connection.query(`
+    UPDATE posts SET description WHERE id=$1;
+  `, [description, id])
+}
+
 const postRepository = {
   insertPost,
   getUsersPostsByUserId,
   insertPostHashtag,
   getPosts,
+  editPostById
 };
 
 export { postRepository };

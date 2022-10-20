@@ -94,4 +94,15 @@ const tesLogin = async (req, res) => {
   }
 };
 
-export { testUser, tesLogin, newPost, getTimeline };
+async function editPost(req, res) {
+  const { description, id } = req.body
+
+  try {
+    await postRepository.editPostById(description, id)
+
+  } catch (error) {
+    return serverError(res)
+  }
+}
+
+export { testUser, tesLogin, newPost, getTimeline, editPost };

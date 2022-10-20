@@ -5,6 +5,7 @@ import {
   newPost,
   tesLogin,
   testUser,
+  editPost
 } from "../controllers/posts.controller.js";
 import { auth } from "../middlewares/authorization.middleware.js";
 import { schemaMiddleware } from "../middlewares/schema.middleware.js";
@@ -17,5 +18,7 @@ router.get("/timeline", auth, getTimeline);
 
 router.post("/test/signin", testUser);
 router.post("/test/login", tesLogin);
+
+router.post("/posts/edit", auth, editPost)
 
 export default router;
