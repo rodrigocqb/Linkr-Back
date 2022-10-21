@@ -7,6 +7,7 @@ import {
   okResponse,
   serverError,
 } from "../helpers/controllers.helper.js";
+import { hashtagsRepository } from "../repositories/hashtags.repository.js";
 
 const newPost = async (req, res) => {
   const { link } = res.locals.body;

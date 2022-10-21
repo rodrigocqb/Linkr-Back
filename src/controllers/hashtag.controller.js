@@ -53,4 +53,13 @@ const filterDescription = (text) => {
   return description.join(" ");
 };
 
-export { addHashtags };
+export async function getTrends(req,res){
+  try{
+      const {rows: trends} = await hashtagsRepository.getTrends();
+      res.send(trends);
+  }catch(error){
+      return res.sendStatus(500);
+  }
+}
+
+export { addHashtags  };
