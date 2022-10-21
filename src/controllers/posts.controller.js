@@ -133,7 +133,6 @@ async function deletePost(req, res) {
   }
 }
 
-export { testUser, tesLogin, newPost, getTimeline, editPost, deletePost };
 async function likePosts(req, res) {
   const userId = res.locals.session;
   const { postId } = req.body;
@@ -160,4 +159,4 @@ async function dislikePosts(req, res) {
   }
 }
 
-export { testUser, tesLogin, newPost, getTimeline, likePosts, dislikePosts };
+export { testUser, tesLogin, newPost, getTimeline, likePosts, dislikePosts, editPost, deletePost };
