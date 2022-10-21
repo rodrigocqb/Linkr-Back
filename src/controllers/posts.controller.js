@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { postRepository } from "../repositories/posts.repository.js";
 import {
   createdResponse,
+  noContentResponse,
   okResponse,
   serverError,
   unprocessableEntityResponse,
@@ -118,21 +119,18 @@ async function editPost(req, res) {
   }
 }
 
-// async function deletePost(req, res) {
-//   const { id } = req.params
-//   if (!id) return unprocessableEntityResponse(res)
+async function deletePost(req, res) {
+  const { id } = req.params
+  if (!id) return unprocessableEntityResponse(res)
 
-//   try {
-//     await postRepository.deletePostById(Number(id))
-//     noContentResponse(res)
+  try {
+    await postRepository.deletePostById(Number(id))
+    noContentResponse(res)
 
-//   } catch (error) {
-//     console.log(error)
-//     return serverError(res)
-//   }
-// }
+  } catch (error) {
+    console.log(error)
+    return serverError(res)
+  }
+}
 
-export {
-  testUser, tesLogin, newPost, getTimeline, editPost,
-  //  deletePost 
-};
+export { testUser, tesLogin, newPost, getTimeline, editPost, deletePost };
