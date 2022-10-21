@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 
+import { createSession } from "../repositories/auth.repository.js";
+
 const createUserToken = async (user, req, res) => {
   const token = jwt.sign(
     {
@@ -10,6 +12,8 @@ const createUserToken = async (user, req, res) => {
     },
     process.env.JWT_SECRET
   );
+
+  await createSession(user.id, token);
 
   res.status(200).json({
     message: "Authenticated user!",
