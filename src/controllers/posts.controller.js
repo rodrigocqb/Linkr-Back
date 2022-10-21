@@ -105,15 +105,34 @@ const tesLogin = async (req, res) => {
 };
 
 async function editPost(req, res) {
-  const { description, id } = req.body
+  const { id } = req.params
+  const { description } = req.body
   if (!description || !id) return unprocessableEntityResponse(res)
 
   try {
     await postRepository.editPostById({ description, id })
     createdResponse(res)
+
   } catch (error) {
     return serverError(res)
   }
 }
 
-export { testUser, tesLogin, newPost, getTimeline, editPost };
+// async function deletePost(req, res) {
+//   const { id } = req.params
+//   if (!id) return unprocessableEntityResponse(res)
+
+//   try {
+//     await postRepository.deletePostById(Number(id))
+//     noContentResponse(res)
+
+//   } catch (error) {
+//     console.log(error)
+//     return serverError(res)
+//   }
+// }
+
+export {
+  testUser, tesLogin, newPost, getTimeline, editPost,
+  //  deletePost 
+};
