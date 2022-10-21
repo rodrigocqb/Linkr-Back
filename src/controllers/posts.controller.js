@@ -6,6 +6,7 @@ import {
   createdResponse,
   okResponse,
   serverError,
+  unprocessableEntityResponse,
 } from "../helpers/controllers.helper.js";
 import { hashtagsRepository } from "../repositories/hashtags.repository.js";
 
@@ -105,10 +106,11 @@ const tesLogin = async (req, res) => {
 
 async function editPost(req, res) {
   const { description, id } = req.body
+  if (!description || !id) return unprocessableEntityResponse(res)
 
   try {
-    await postRepository.editPostById(description, id)
-
+    await postRepository.editPostById({ description, id })
+    createdResponse(res)
   } catch (error) {
     return serverError(res)
   }

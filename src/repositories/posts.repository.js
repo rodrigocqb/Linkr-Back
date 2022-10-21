@@ -41,7 +41,7 @@ const getPosts = async () => {
 
 const editPostById = async ({ id, description }) => {
   return await connection.query(`
-    UPDATE posts SET description WHERE id=$1;
+    UPDATE posts SET description=$1 WHERE id=$2;
   `, [description, id])
 }
 

@@ -19,6 +19,6 @@ router.get("/timeline", auth, getTimeline);
 router.post("/test/signin", testUser);
 router.post("/test/login", tesLogin);
 
-router.post("/posts/edit", auth, editPost)
+router.put("/posts/edit", auth, editPost)
 
 export default router;
