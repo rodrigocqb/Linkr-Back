@@ -103,4 +103,30 @@ const tesLogin = async (req, res) => {
   }
 };
 
-export { testUser, tesLogin, newPost, getTimeline };
+async function likePosts(req, res) {
+  const userId = res.locals.session;
+  const { postId } = req.body;
+
+  try {
+    await postRepository.likePost({ postId, userId });
+    return okResponse(res);
+  } catch (error) {
+    console.log(error);
+    return serverError(res);
+  }
+}
+
+async function dislikePosts(req, res) {
+  const userId = res.locals.session;
+  const { postId } = req.body;
+
+  try {
+    await postRepository.dislikePost({ postId, userId });
+    return okResponse(res);
+  } catch (error) {
+    console.log(error);
+    return serverError(res);
+  }
+}
+
+export { testUser, tesLogin, newPost, getTimeline, likePosts, dislikePosts };

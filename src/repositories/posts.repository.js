@@ -39,11 +39,27 @@ const getPosts = async () => {
   LIMIT 20;`);
 };
 
+const likePost = async ({ postId, userId }) => {
+  return connection.query(
+    `INSERT INTO likes (post_id, user_id) VALUES ($1, $2);`,
+    [postId, userId]
+  );
+};
+
+const dislikePost = async ({ postId, userId }) => {
+  return connection.query(
+    `DELETE FROM likes WHERE post_id = $1 AND user_id = $2;`,
+    [postId, userId]
+  );
+};
+
 const postRepository = {
   insertPost,
   getUsersPostsByUserId,
   insertPostHashtag,
   getPosts,
+  likePost,
+  dislikePost,
 };
 
 export { postRepository };
