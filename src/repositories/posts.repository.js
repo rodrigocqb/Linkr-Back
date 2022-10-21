@@ -39,6 +39,17 @@ const getPosts = async () => {
   LIMIT 20;`);
 };
 
+const editPostById = async ({ id, description }) => {
+  return await connection.query(`
+    UPDATE posts SET description=$1 WHERE id=$2;
+  `, [description, id])
+}
+
+const deletePostById = async (id) => {
+  await connection.query(`DELETE FROM posts_hashtags WHERE post_id=$1;`, [id])
+  await connection.query(`DELETE FROM likes WHERE post_id=$1;`, [id])
+  return await connection.query(`DELETE FROM posts WHERE id=$1;`, [id])
+}
 const likePost = async ({ postId, userId }) => {
   return connection.query(
     `INSERT INTO likes (post_id, user_id) VALUES ($1, $2);`,
@@ -58,6 +69,8 @@ const postRepository = {
   getUsersPostsByUserId,
   insertPostHashtag,
   getPosts,
+  editPostById,
+  deletePostById,
   likePost,
   dislikePost,
 };

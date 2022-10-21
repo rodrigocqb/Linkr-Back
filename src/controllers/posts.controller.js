@@ -4,8 +4,10 @@ import jwt from "jsonwebtoken";
 import { postRepository } from "../repositories/posts.repository.js";
 import {
   createdResponse,
+  noContentResponse,
   okResponse,
   serverError,
+  unprocessableEntityResponse,
 } from "../helpers/controllers.helper.js";
 import { hashtagsRepository } from "../repositories/hashtags.repository.js";
 
@@ -103,6 +105,35 @@ const tesLogin = async (req, res) => {
   }
 };
 
+async function editPost(req, res) {
+  const { id } = req.params
+  const { description } = req.body
+  if (!description || !id) return unprocessableEntityResponse(res)
+
+  try {
+    await postRepository.editPostById({ description, id })
+    createdResponse(res)
+
+  } catch (error) {
+    return serverError(res)
+  }
+}
+
+async function deletePost(req, res) {
+  const { id } = req.params
+  if (!id) return unprocessableEntityResponse(res)
+
+  try {
+    await postRepository.deletePostById(Number(id))
+    noContentResponse(res)
+
+  } catch (error) {
+    console.log(error)
+    return serverError(res)
+  }
+}
+
+export { testUser, tesLogin, newPost, getTimeline, editPost, deletePost };
 async function likePosts(req, res) {
   const userId = res.locals.session;
   const { postId } = req.body;
