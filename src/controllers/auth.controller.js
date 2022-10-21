@@ -20,32 +20,11 @@ class AuthController {
             image
         } = req.body;
 
-        // Validações
-        if(!email) return res.status(422).json({ 
-                message: "O e-mail é obrigatório!" 
-            }
-        );
-
-        if(!password) return res.status(422).json({ 
-                message: "A senha é obrigatória!" 
-            }
-        );
-
-        if(!username) return res.status(422).json({ 
-                message: "O nome é obrigatório!" 
-            }
-        );
-
-        if(!image) return res.status(422).json({ 
-                message: "O link da imagem é obrigatório!" 
-            }
-        );
-
         // Verificando a existência do usuário
         const userExists = await getUserByEmail(email);
 
         if(userExists.rows.length > 0) return res.status(409).json({
-                message: "Usuário já cadastrado!"
+                message: "User already registered!"
             }
         );
 
@@ -58,7 +37,7 @@ class AuthController {
             await createUser(email, passwordHash, username, image);
 
             return res.status(201).json({
-                message: "Usuário criado com sucesso!"
+                message: "User created successfully!"
             });
 
         } catch (error) {
@@ -73,22 +52,11 @@ class AuthController {
 
         const { email, password } = req.body;
 
-        // Validações
-        if(!email) return res.status(422).json({
-                message: "O e-mail é obrigatório!"
-            }
-        );
-
-        if(!password) return res.status(422).json({
-                message: "A senha é obrigatória!"
-            }
-        );
-
         // Verificando a existência do usuário
         const userExists = await getUserByEmail(email);
 
         if(!userExists.rows[0]) return res.status(401).json({
-                message: "E-mail não encontrado!"
+                message: "E-mail not found!"
             }
         );
 
@@ -97,7 +65,7 @@ class AuthController {
         const checkPassword = await bcrypt.compare(password, user.password);
 
         if(!checkPassword) return res.status(401).json({
-                message: "Senha inválida!"
+                message: "Invalid password!"
             }
         );
 
