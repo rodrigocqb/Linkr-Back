@@ -31,7 +31,7 @@ async function getUserByEmail(email) {
   async function createSession(id, token) {
     return connection.query(
       `INSERT INTO sessions (user_id, token)
-      VALUES ($1, $2, $3)`, [id, token]
+      VALUES ($1, $2)`, [id, token]
     );
   }
 
