@@ -16,7 +16,6 @@ class AuthController {
         const {
             email,
             password,
-            confirmPassword,
             username,
             image
         } = req.body;
@@ -29,16 +28,6 @@ class AuthController {
 
         if(!password) return res.status(422).json({ 
                 message: "A senha é obrigatória!" 
-            }
-        );
-
-        if(!confirmPassword) return res.status(422).json({ 
-                message: "Confirme sua senha!" 
-            }
-        );
-
-        if(password != confirmPassword) return res.status(422).json({ 
-                message: "A senha e a confirmação de senha, precisam ser iguais!" 
             }
         );
 
