@@ -50,6 +50,19 @@ const deletePostById = async (id) => {
   await connection.query(`DELETE FROM likes WHERE post_id=$1;`, [id])
   return await connection.query(`DELETE FROM posts WHERE id=$1;`, [id])
 }
+const likePost = async ({ postId, userId }) => {
+  return connection.query(
+    `INSERT INTO likes (post_id, user_id) VALUES ($1, $2);`,
+    [postId, userId]
+  );
+};
+
+const dislikePost = async ({ postId, userId }) => {
+  return connection.query(
+    `DELETE FROM likes WHERE post_id = $1 AND user_id = $2;`,
+    [postId, userId]
+  );
+};
 
 const postRepository = {
   insertPost,
@@ -57,7 +70,9 @@ const postRepository = {
   insertPostHashtag,
   getPosts,
   editPostById,
-  deletePostById
+  deletePostById,
+  likePost,
+  dislikePost,
 };
 
 export { postRepository };
