@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { createSession } from "../repositories/auth.repository.js";
+import { okResponse } from "./controllers.helper.js";
 
 const createUserToken = async (user, req, res) => {
   const token = jwt.sign(
@@ -15,7 +16,7 @@ const createUserToken = async (user, req, res) => {
 
   await createSession(user.id, token);
 
-  res.status(200).json({
+  return okResponse(res, {
     message: "Authenticated user!",
     id: user.id,
     username: user.username,
