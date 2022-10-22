@@ -1,4 +1,4 @@
-import { serverError } from "../helpers/controllers.helper.js";
+import { okResponse, serverError } from "../helpers/controllers.helper.js";
 import { hashtagsRepository } from "../repositories/hashtags.repository.js";
 
 const addHashtags = async (req, res, next) => {
@@ -53,4 +53,31 @@ const filterDescription = (text) => {
   return description.join(" ");
 };
 
-export { addHashtags };
+export async function getTrends(req,res){
+  try{
+      const {rows: trends} = await hashtagsRepository.getTrends();
+      res.send(trends);
+  }catch(error){
+      return res.sendStatus(500);
+  }
+}
+
+export async function getPostsHashtags(req, res) {
+  const { hashtag } = req.params;
+  try {
+    const posts = (await hashtagsRepository.getPostsByHashtags(hashtag)).rows;
+    const timeline = await Promise.all(
+      posts.map(async (post) => {
+        const hashtags = (await hashtagsRepository.getHashtagByIdPost(post.id))
+          .rows[0]?.hashtag;
+        return { ...post, hashtags: hashtags };
+      })
+    );
+    return okResponse(res, timeline);
+  } catch (error) {
+    console.log(error.message);
+    return serverError(res);
+  }
+}
+
+export { addHashtags}

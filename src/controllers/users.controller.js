@@ -4,6 +4,7 @@ import {
   serverError,
 } from "../helpers/controllers.helper.js";
 import * as usersRepository from "../repositories/users.repository.js";
+import { hashtagsRepository } from "../repositories/hashtags.repository.js";
 
 async function getUserPosts(req, res) {
   const { id } = req.params;
@@ -13,7 +14,16 @@ async function getUserPosts(req, res) {
       return notFoundResponse(res);
     }
     const posts = (await usersRepository.getUserPostsById(id)).rows;
-    user.posts = posts;
+    
+    const userTimeline = await Promise.all(
+      posts.map(async (post) => {
+        const hashtags = (await hashtagsRepository.getHashtagByIdPost(post.id))
+          .rows[0]?.hashtag;
+        return { ...post, hashtags: hashtags };
+      })
+    );
+
+    user.posts = userTimeline;
     return okResponse(res, user);
   } catch (error) {
     console.log(error.message);
