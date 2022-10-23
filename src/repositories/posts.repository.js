@@ -14,10 +14,30 @@ const getUsersPostsByUserId = async (userId) => {
   );
 };
 
+const getPostById = async (postId) => {
+  return await connection.query(` SELECT * FROM posts WHERE id = $1;`, [
+    postId,
+  ]);
+};
+
 const insertPostHashtag = async ({ postId, hashtagId }) => {
   return await connection.query(
     `INSERT INTO posts_hashtags (post_id, hashtag_id) VALUES ($1, $2);`,
     [postId, hashtagId]
+  );
+};
+
+const getUserPostHashtag = async (postId) => {
+  return await connection.query(
+    `SELECT * FROM posts_hashtags WHERE post_id = $1;`,
+    [postId]
+  );
+};
+
+const deletePostHashtag = async (postId) => {
+  return await connection.query(
+    ` DELETE FROM posts_hashtags WHERE post_id = $1;`,
+    [postId]
   );
 };
 
@@ -40,16 +60,19 @@ const getPosts = async () => {
 };
 
 const editPostById = async ({ id, description }) => {
-  return await connection.query(`
+  return await connection.query(
+    `
     UPDATE posts SET description=$1 WHERE id=$2;
-  `, [description, id])
-}
+  `,
+    [description, id]
+  );
+};
 
 const deletePostById = async (id) => {
-  await connection.query(`DELETE FROM posts_hashtags WHERE post_id=$1;`, [id])
-  await connection.query(`DELETE FROM likes WHERE post_id=$1;`, [id])
-  return await connection.query(`DELETE FROM posts WHERE id=$1;`, [id])
-}
+  await connection.query(`DELETE FROM posts_hashtags WHERE post_id=$1;`, [id]);
+  await connection.query(`DELETE FROM likes WHERE post_id=$1;`, [id]);
+  return await connection.query(`DELETE FROM posts WHERE id=$1;`, [id]);
+};
 const likePost = async ({ postId, userId }) => {
   return connection.query(
     `INSERT INTO likes (post_id, user_id) VALUES ($1, $2);`,
@@ -68,11 +91,14 @@ const postRepository = {
   insertPost,
   getUsersPostsByUserId,
   insertPostHashtag,
+  getUserPostHashtag,
+  deletePostHashtag,
   getPosts,
   editPostById,
   deletePostById,
   likePost,
   dislikePost,
+  getPostById,
 };
 
 export { postRepository };
