@@ -4,6 +4,7 @@ import {
   noContentResponse,
   okResponse,
   serverError,
+  unauthorizedResponse,
   unprocessableEntityResponse,
 } from "../helpers/controllers.helper.js";
 import { hashtagsRepository } from "../repositories/hashtags.repository.js";
@@ -52,12 +53,21 @@ async function getTimeline(req, res) {
 async function editPost(req, res) {
   const { id } = req.params;
   const { description } = res.locals;
-
+  const userId = res.locals.session;
   const { hashtags } = res.locals;
-  const isIdValid = (await postRepository.getPostById(id)).rowCount > 0;
 
-  if (!isIdValid) {
+  const isIdValid = await postRepository.getPostById(id);
+
+  if (!(isIdValid.rowCount > 0)) {
     return unprocessableEntityResponse(res, "This post doesn't exists.");
+  }
+  const post = isIdValid.rows[0];
+
+  if (post.user_id !== userId) {
+    return unauthorizedResponse(
+      res,
+      "You don't have the permission to edit this post"
+    );
   }
 
   try {
