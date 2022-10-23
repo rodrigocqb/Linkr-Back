@@ -52,7 +52,7 @@ async function getTimeline(req, res) {
 async function editPost(req, res) {
   const { id } = req.params;
   const { description } = res.locals;
-  console.log(`ESSA É A ${description}`);
+
   const { hashtags } = res.locals;
   const isIdValid = (await postRepository.getPostById(id)).rowCount > 0;
 
