@@ -51,10 +51,30 @@ async function getTimeline(req, res) {
 
 async function editPost(req, res) {
   const { id } = req.params;
-  const { description } = req.body;
-  if (!description || !id) return unprocessableEntityResponse(res);
+  const { description } = res.locals;
+  console.log(`ESSA É A ${description}`);
+  const { hashtags } = res.locals;
+  const isIdValid = (await postRepository.getPostById(id)).rowCount > 0;
+
+  if (!isIdValid) {
+    return unprocessableEntityResponse(res, "This post doesn't exists.");
+  }
 
   try {
+    const postHasHashtag =
+      (await postRepository.getUserPostHashtag(id)).rowCount > 0;
+
+    if (postHasHashtag) {
+      await postRepository.deletePostHashtag(id);
+    }
+
+    const postId = id;
+    if (hashtags) {
+      hashtags.forEach(async (hashtagId) => {
+        await postRepository.insertPostHashtag({ postId, hashtagId });
+      });
+    }
+
     await postRepository.editPostById({ description, id });
     createdResponse(res);
   } catch (error) {
