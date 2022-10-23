@@ -5,4 +5,8 @@ const postSchema = Joi.object({
   description: Joi.string().allow(null, ""),
 });
 
-export { postSchema };
+const editSchema = Joi.object({
+  description: Joi.string().allow(null, ""),
+});
+
+export { postSchema, editSchema };
