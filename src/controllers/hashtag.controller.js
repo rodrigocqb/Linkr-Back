@@ -25,8 +25,8 @@ const addHashtags = async (req, res, next) => {
         hashtagIdArray.push(hashtagId);
       }
     }
-    const text = filterDescription(description);
-    res.locals.description = text;
+
+    res.locals.description = description;
     res.locals.hashtags = [...hashtagIdArray];
     return next();
   } catch (error) {
@@ -45,20 +45,12 @@ const checkHashtag = (text) => {
   return wordsFiltered.map((word) => word.slice(-(word.length - 1)));
 };
 
-const filterDescription = (text) => {
-  const words = text.split(" ");
-  const description = words.filter(
-    (word) => !word.includes("#") && (word.match(/#/g) || []).length === 0
-  );
-  return description.join(" ");
-};
-
-export async function getTrends(req,res){
-  try{
-      const {rows: trends} = await hashtagsRepository.getTrends();
-      res.send(trends);
-  }catch(error){
-      return res.sendStatus(500);
+export async function getTrends(req, res) {
+  try {
+    const { rows: trends } = await hashtagsRepository.getTrends();
+    res.send(trends);
+  } catch (error) {
+    return res.sendStatus(500);
   }
 }
 
@@ -80,4 +72,4 @@ export async function getPostsHashtags(req, res) {
   }
 }
 
-export { addHashtags}
+export { addHashtags };
