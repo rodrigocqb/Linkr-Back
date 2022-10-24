@@ -13,8 +13,7 @@ async function checkPostData(req, res, next) {
     if (!isIdValid) {
       return notFoundResponse(res);
     }
-    const post = isIdValid.rows[0];
-
+    const post = isIdValid;
     if (post.user_id !== userId) {
       return unauthorizedResponse(res);
     }
