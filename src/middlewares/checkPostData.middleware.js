@@ -2,8 +2,8 @@ import {
   notFoundResponse,
   serverError,
   unauthorizedResponse,
-} from "../helpers/controllers.helper";
-import { postRepository } from "../repositories/posts.repository";
+} from "../helpers/controllers.helper.js";
+import { postRepository } from "../repositories/posts.repository.js";
 
 async function checkPostData(req, res, next) {
   const { id } = req.params;
