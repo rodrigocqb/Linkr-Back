@@ -4,10 +4,10 @@ const schemaMiddleware = (schema) => {
   return (req, res, next) => {
     const body = req.body;
 
-    const validate = schema.validate(body, { abortEarly: false });
+    const validation = schema.validate(body, { abortEarly: false });
 
-    if (validate.error) {
-      const errors = validate.error.details.map((detail) => detail.message);
+    if (validation.error) {
+      const errors = validation.error.details.map((detail) => detail.message);
       return unprocessableEntityResponse(res, errors);
     }
 

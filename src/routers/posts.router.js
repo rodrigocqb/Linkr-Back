@@ -9,6 +9,7 @@ import {
   deletePost,
 } from "../controllers/posts.controller.js";
 import { auth } from "../middlewares/authorization.middleware.js";
+import checkPostData from "../middlewares/checkPostData.middleware.js";
 import { schemaMiddleware } from "../middlewares/schema.middleware.js";
 import { editSchema, postSchema } from "../schemas/post.schema.js";
 
@@ -21,10 +22,11 @@ router.post("/posts/dislike", auth, dislikePosts);
 router.put(
   "/posts/:id",
   auth,
+  checkPostData,
   schemaMiddleware(editSchema),
   addHashtags,
   editPost
 );
-router.delete("/posts/:id", auth, deletePost);
+router.delete("/posts/:id", auth, checkPostData, deletePost);
 
 export default router;
