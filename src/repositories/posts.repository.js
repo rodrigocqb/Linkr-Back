@@ -76,6 +76,7 @@ const editPostById = async ({ id, description }) => {
 const deletePostById = async (id) => {
   await connection.query(`DELETE FROM posts_hashtags WHERE post_id=$1;`, [id]);
   await connection.query(`DELETE FROM likes WHERE post_id=$1;`, [id]);
+  await connection.query(`DELETE FROM comments WHERE post_id = $1`, [id]);
   return await connection.query(`DELETE FROM posts WHERE id=$1;`, [id]);
 };
 const likePost = async ({ postId, userId }) => {
