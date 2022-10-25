@@ -41,8 +41,9 @@ const deletePostHashtag = async (postId) => {
   );
 };
 
-const getPosts = async () => {
-  return connection.query(`SELECT t1.id AS user_id, t1.username, t1.image, 
+const getPosts = async (followerId) => {
+  return connection.query(
+    `SELECT t1.id AS user_id, t1.username, t1.image, 
   posts.id, posts.link, posts.description,
   ARRAY_REMOVE(
     ARRAY_AGG(t2.username 
@@ -54,9 +55,13 @@ const getPosts = async () => {
   ON posts.id = likes.post_id
   LEFT JOIN users AS t2
   ON likes.user_id = t2.id
+  WHERE t1.id IN ( SELECT user_id FROM followers WHERE follower_id = $1 )
+  OR t1.id IN ( SELECT users.id FROM users WHERE users.id = $1 )
   GROUP BY t1.id, posts.id 
   ORDER BY posts.id DESC
-  LIMIT 20;`);
+  LIMIT 20;`,
+    [followerId]
+  );
 };
 
 const editPostById = async ({ id, description }) => {
