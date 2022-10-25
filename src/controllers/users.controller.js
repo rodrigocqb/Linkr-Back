@@ -48,4 +48,17 @@ async function getUsersBySearch(req, res) {
   }
 }
 
-export { getUserPosts, getUsersBySearch };
+async function getFollowers(req, res) {
+  const userId = res.locals.session;
+
+  try {
+    const userFollows = (await usersRepository.getUsersFollows(userId)).rows;
+
+    return okResponse(res, userFollows);
+  } catch (error) {
+    console.log(error.message);
+    return serverError(res);
+  }
+}
+
+export { getUserPosts, getUsersBySearch, getFollowers };
