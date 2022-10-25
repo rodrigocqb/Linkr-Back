@@ -8,6 +8,6 @@ import { auth } from "../middlewares/authorization.middleware.js";
 const router = express.Router();
 
 router.get("/user/:id", auth, getUserPosts);
-router.get("/search/:name", getUsersBySearch);
+router.get("/search/:name", auth, getUsersBySearch);
 
 export default router;

@@ -37,4 +37,17 @@ async function getUsersByName(search) {
   );
 }
 
-export { getUserById, getUserPostsById, getUsersByName };
+async function getUsersFollows(userId) {
+  return connection.query(
+    `
+      SELECT j2.username
+      FROM followers 
+      JOIN users AS j1 ON followers.follower_id = j1.id 
+      JOIN users AS j2 ON followers.user_id = j2.id
+      WHERE follower_id = $1;
+    `,
+    [userId]
+  );
+}
+
+export { getUserById, getUserPostsById, getUsersByName, getUsersFollows };

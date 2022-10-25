@@ -5,6 +5,7 @@ import {
 } from "../helpers/controllers.helper.js";
 import * as usersRepository from "../repositories/users.repository.js";
 import { hashtagsRepository } from "../repositories/hashtags.repository.js";
+import sortUsersArray from "../helpers/search.helper.js";
 
 async function getUserPosts(req, res) {
   const { id } = req.params;
@@ -14,7 +15,7 @@ async function getUserPosts(req, res) {
       return notFoundResponse(res);
     }
     const posts = (await usersRepository.getUserPostsById(id)).rows;
-    
+
     const userTimeline = await Promise.all(
       posts.map(async (post) => {
         const hashtags = (await hashtagsRepository.getHashtagByIdPost(post.id))
@@ -33,9 +34,14 @@ async function getUserPosts(req, res) {
 
 async function getUsersBySearch(req, res) {
   const { name } = req.params;
+  const userId = res.locals.session;
+
   try {
     const allUsers = (await usersRepository.getUsersByName(name)).rows;
-    return okResponse(res, allUsers);
+    const userFollows = (await usersRepository.getUsersFollows(userId)).rows;
+
+    const usersFiltered = sortUsersArray(allUsers, userFollows);
+    return okResponse(res, usersFiltered);
   } catch (error) {
     console.log(error.message);
     return serverError(res);
