@@ -5,11 +5,7 @@ const sortUsersArray = (allSearchedUsers, userFollows) => {
   });
 
   allSearchedUsers.forEach((user) => {
-    if (arrUsername.includes(user.username)) {
-      user.isFollowing = true;
-    } else {
-      user.isFollowing = false;
-    }
+    user.isFollowing = arrUsername.includes(user.username);
   });
 
   const isFollowingFirst = allSearchedUsers.sort(
