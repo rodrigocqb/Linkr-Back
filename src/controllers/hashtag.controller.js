@@ -1,4 +1,5 @@
 import { okResponse, serverError } from "../helpers/controllers.helper.js";
+import { commentRepository } from "../repositories/comments.repository.js";
 import { hashtagsRepository } from "../repositories/hashtags.repository.js";
 
 const addHashtags = async (req, res, next) => {
@@ -62,7 +63,8 @@ export async function getPostsHashtags(req, res) {
       posts.map(async (post) => {
         const hashtags = (await hashtagsRepository.getHashtagByIdPost(post.id))
           .rows[0]?.hashtag;
-        return { ...post, hashtags: hashtags };
+        const comments = (await commentRepository.getComments(post.id)).rows;
+        return { ...post, hashtags, comments };
       })
     );
     return okResponse(res, timeline);

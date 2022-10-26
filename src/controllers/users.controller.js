@@ -6,6 +6,7 @@ import {
 import * as usersRepository from "../repositories/users.repository.js";
 import { hashtagsRepository } from "../repositories/hashtags.repository.js";
 import sortUsersArray from "../helpers/search.helper.js";
+import { commentRepository } from "../repositories/comments.repository.js";
 
 async function getUserPosts(req, res) {
   const { id } = req.params;
@@ -20,7 +21,8 @@ async function getUserPosts(req, res) {
       posts.map(async (post) => {
         const hashtags = (await hashtagsRepository.getHashtagByIdPost(post.id))
           .rows[0]?.hashtag;
-        return { ...post, hashtags: hashtags };
+        const comments = (await commentRepository.getComments(post.id)).rows;
+        return { ...post, hashtags, comments };
       })
     );
 
