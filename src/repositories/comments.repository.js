@@ -8,9 +8,9 @@ const insertComment = async ({ userId, postId, comment }) => {
 };
 
 const getComments = async (id) => {
-  await connection.query(
-    `SELECT id, user_id, post_id, comment
-    FROM comments WHERE post_id = $1`,
+  return await connection.query(
+    `SELECT id, user_id, posts_id, comment
+    FROM comments WHERE posts_id = $1`,
     [id]
   );
 };

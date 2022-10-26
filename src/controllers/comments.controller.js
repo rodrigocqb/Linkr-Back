@@ -23,16 +23,4 @@ async function commentPost(req, res) {
   }
 }
 
-async function getCommentsFromPost(req, res) {
-  const { postId } = req.params;
-  try {
-    const postExists = (await postRepository.getPostById(postId)).rows[0];
-    if (!postExists) return notFoundResponse(res, "Post not found");
-    const comments = (await commentRepository.getComments(postId)).rows;
-    return okResponse(res, comments);
-  } catch (error) {
-    return serverError(res);
-  }
-}
-
-export { commentPost, getCommentsFromPost };
+export { commentPost };
