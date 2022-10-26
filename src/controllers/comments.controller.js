@@ -1,7 +1,6 @@
 import {
   createdResponse,
   notFoundResponse,
-  okResponse,
   serverError,
 } from "../helpers/controllers.helper.js";
 import { postRepository } from "../repositories/posts.repository.js";

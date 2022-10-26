@@ -8,6 +8,7 @@ import {
 } from "../helpers/controllers.helper.js";
 import { hashtagsRepository } from "../repositories/hashtags.repository.js";
 import { commentRepository } from "../repositories/comments.repository.js";
+import sharesRepository from "../repositories/shares.repository.js";
 
 const newPost = async (req, res) => {
   const { link } = res.locals.body;
@@ -37,15 +38,18 @@ async function getTimeline(req, res) {
 
   try {
     const posts = (await postRepository.getPosts(userId)).rows;
+    const shares = (await sharesRepository.getSharedPosts(userId)).rows;
+    posts.push(...shares)
+    posts.sort((a, b) => { return new Date(b.created_at).getTime() - new Date(a.created_at).getTime() }).slice(0, 20)
 
-    const timeline = await Promise.all(
+    const timeline = (await Promise.all(
       posts.map(async (post) => {
         const hashtags = (await hashtagsRepository.getHashtagByIdPost(post.id))
           .rows[0]?.hashtag;
         const comments = (await commentRepository.getComments(post.id)).rows;
         return { ...post, hashtags, comments };
       })
-    );
+    ))
 
     return okResponse(res, timeline);
   } catch (error) {
