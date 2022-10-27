@@ -1,3 +1,4 @@
+import connection from '../database/database.js';
 import {
   notFoundResponse,
   okResponse,
@@ -48,4 +49,109 @@ async function getUsersBySearch(req, res) {
   }
 }
 
-export { getUserPosts, getUsersBySearch };
+async function follow(req, res) {
+
+  const infoUser = res.locals.user;
+
+  const idUser = infoUser.id;
+
+  const idFollowedUser = req.body.id;
+
+  const infoFollowedUser = await connection.query(`
+      SELECT * FROM users WHERE id = $1
+    `, [ idFollowedUser ]);
+
+  const followedUser = infoFollowedUser.rows[0];
+
+  try {
+
+    await usersRepository.followUser(idUser, idFollowedUser);
+
+    return res.status(200).json({
+      message: `Você começou a seguir ${followedUser.username}`
+    })
+    
+  } catch (error) {
+    
+    console.log(error);
+    
+    return res.status(500).json({
+      message: `Erro ao tentar seguir o usuário ${followedUser.username}`
+    })
+
+  }
+
+}
+
+async function unfollow(req, res) {
+
+  const infoUser = res.locals.user;
+
+  const idUser = infoUser.id;
+
+  const idUnfollowedUser = req.body.id;
+
+  const infoUnfollowedUser = await connection.query(`
+      SELECT * FROM users WHERE id = $1
+    `, [ idUnfollowedUser ]);
+
+  const unfollowedUser = infoUnfollowedUser.rows[0];
+
+  try {
+
+    await usersRepository.unfollowUser(idUser, idUnfollowedUser);
+
+    return res.status(200).json({
+      message: `Você deixou de seguir ${unfollowedUser.username}`
+    })
+    
+  } catch (error) {
+    
+    console.log(error);
+    
+    return res.status(500).json({
+      message: `Erro ao tentar deixar de seguir o usuário ${unfollowedUser.username}`
+    })
+
+  }
+
+}
+
+async function verifyFollower(req, res) {
+  const infoUser = res.locals.user;
+
+  const idUser = infoUser.id;
+
+  // const idPossibleFollower = Number(req.params.follower);
+
+  try {
+
+    const followerFound = (await usersRepository.verifyFollowerById(idUser)).rows;
+
+    const values = [];
+
+    followerFound.map((follower) => {
+      // console.log(follower.follower_id);
+      values.push(follower.follower_id);
+    })
+
+    // console.log(followerFound);
+    // console.log(values);
+
+    return res.status(200).json({
+      followers_id: values
+    })
+
+    
+  } catch (error) {
+    
+    console.log(error);
+    
+    return res.status(500).json({
+      message: error
+    })
+
+  }
+}
+
+export { getUserPosts, getUsersBySearch, follow, unfollow, verifyFollower };
