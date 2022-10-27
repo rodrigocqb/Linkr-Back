@@ -7,6 +7,7 @@ import {
   unprocessableEntityResponse,
 } from "../helpers/controllers.helper.js";
 import { hashtagsRepository } from "../repositories/hashtags.repository.js";
+import { commentRepository } from "../repositories/comments.repository.js";
 
 const newPost = async (req, res) => {
   const { link } = res.locals.body;
@@ -32,13 +33,17 @@ const newPost = async (req, res) => {
 };
 
 async function getTimeline(req, res) {
+  const userId = res.locals.session;
+
   try {
-    const posts = (await postRepository.getPosts()).rows;
+    const posts = (await postRepository.getPosts(userId)).rows;
+
     const timeline = await Promise.all(
       posts.map(async (post) => {
         const hashtags = (await hashtagsRepository.getHashtagByIdPost(post.id))
           .rows[0]?.hashtag;
-        return { ...post, hashtags: hashtags };
+        const comments = (await commentRepository.getComments(post.id)).rows;
+        return { ...post, hashtags, comments };
       })
     );
 

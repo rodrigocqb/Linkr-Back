@@ -7,6 +7,7 @@ import {
 import * as usersRepository from "../repositories/users.repository.js";
 import { hashtagsRepository } from "../repositories/hashtags.repository.js";
 import sortUsersArray from "../helpers/search.helper.js";
+import { commentRepository } from "../repositories/comments.repository.js";
 
 async function getUserPosts(req, res) {
   const { id } = req.params;
@@ -21,7 +22,8 @@ async function getUserPosts(req, res) {
       posts.map(async (post) => {
         const hashtags = (await hashtagsRepository.getHashtagByIdPost(post.id))
           .rows[0]?.hashtag;
-        return { ...post, hashtags: hashtags };
+        const comments = (await commentRepository.getComments(post.id)).rows;
+        return { ...post, hashtags, comments };
       })
     );
 
@@ -53,22 +55,26 @@ async function follow(req, res) {
 
   const infoUser = res.locals.user;
 
-  const idUser = infoUser.id;
+  const followerId = infoUser.id;
 
-  const idFollowedUser = req.body.id;
+  const userId = req.body.id;
+
+  if(followerId === userId) return res.status(422).json({
+    message: "You cannot perform this operation!"
+  });
 
   const infoFollowedUser = await connection.query(`
       SELECT * FROM users WHERE id = $1
-    `, [ idFollowedUser ]);
+    `, [ userId ]);
 
   const followedUser = infoFollowedUser.rows[0];
 
   try {
 
-    await usersRepository.followUser(idUser, idFollowedUser);
+    await usersRepository.followUser(followerId, userId);
 
     return res.status(200).json({
-      message: `Você começou a seguir ${followedUser.username}`
+      message: `You started following ${followedUser.username}`
     })
     
   } catch (error) {
@@ -76,7 +82,7 @@ async function follow(req, res) {
     console.log(error);
     
     return res.status(500).json({
-      message: `Erro ao tentar seguir o usuário ${followedUser.username}`
+      message: `Error trying to follow user ${followedUser.username}`
     })
 
   }
@@ -87,22 +93,26 @@ async function unfollow(req, res) {
 
   const infoUser = res.locals.user;
 
-  const idUser = infoUser.id;
+  const unfollowerId = infoUser.id;
 
-  const idUnfollowedUser = req.body.id;
+  const userId = req.body.id;
+
+  if(unfollowerId === userId) return res.status(422).json({
+    message: "You cannot perform this operation!"
+  });
 
   const infoUnfollowedUser = await connection.query(`
       SELECT * FROM users WHERE id = $1
-    `, [ idUnfollowedUser ]);
+    `, [ userId ]);
 
   const unfollowedUser = infoUnfollowedUser.rows[0];
 
   try {
 
-    await usersRepository.unfollowUser(idUser, idUnfollowedUser);
+    await usersRepository.unfollowUser(unfollowerId, userId);
 
     return res.status(200).json({
-      message: `Você deixou de seguir ${unfollowedUser.username}`
+      message: `You unfollowed ${unfollowedUser.username}`
     })
     
   } catch (error) {
@@ -110,7 +120,7 @@ async function unfollow(req, res) {
     console.log(error);
     
     return res.status(500).json({
-      message: `Erro ao tentar deixar de seguir o usuário ${unfollowedUser.username}`
+      message: `Error trying to unfollow the user ${unfollowedUser.username}`
     })
 
   }
@@ -154,4 +164,17 @@ async function verifyFollower(req, res) {
   }
 }
 
-export { getUserPosts, getUsersBySearch, follow, unfollow, verifyFollower };
+async function getFollowers(req, res) {
+  const userId = res.locals.session;
+
+  try {
+    const userFollows = (await usersRepository.getUsersFollows(userId)).rows;
+
+    return okResponse(res, userFollows);
+  } catch (error) {
+    console.log(error.message);
+    return serverError(res);
+  }
+}
+
+export { getUserPosts, getUsersBySearch, follow, unfollow, verifyFollower, getFollowers };

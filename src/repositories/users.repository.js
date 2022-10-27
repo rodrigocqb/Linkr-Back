@@ -50,23 +50,23 @@ async function getUsersFollows(userId) {
   );
 }
 
-async function followUser(idUser,  idFollowedUser) {
+async function followUser(followerId,  userId) {
   return connection.query(
     `
       INSERT INTO followers (follower_id, user_id) 
       VALUES ($1, $2)
     `,
-    [ idFollowedUser, idUser ]
+    [ followerId, userId ]
   );
 }
 
-async function unfollowUser(idUser, idFollowedUser) {
+async function unfollowUser( unfollowerId, userId) {
   return connection.query(
     `
       DELETE FROM followers
       WHERE follower_id = $1 AND user_id = $2
     `,
-    [ idFollowedUser, idUser ]
+    [ unfollowerId, userId ]
   );
 }
 
