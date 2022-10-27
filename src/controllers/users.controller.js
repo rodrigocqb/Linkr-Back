@@ -10,12 +10,13 @@ import { commentRepository } from "../repositories/comments.repository.js";
 
 async function getUserPosts(req, res) {
   const { id } = req.params;
+  const cut = req.query.cut;
   try {
     const user = (await usersRepository.getUserById(id)).rows[0];
     if (!user) {
       return notFoundResponse(res);
     }
-    const posts = (await usersRepository.getUserPostsById(id)).rows;
+    const posts = (await usersRepository.getUserPostsById(id,cut)).rows;
 
     const userTimeline = await Promise.all(
       posts.map(async (post) => {

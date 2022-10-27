@@ -34,10 +34,10 @@ const newPost = async (req, res) => {
 
 async function getTimeline(req, res) {
   const userId = res.locals.session;
-
+  const cut = req.query.cut;
+  console.log(cut);
   try {
-    const posts = (await postRepository.getPosts(userId)).rows;
-
+    const posts = (await postRepository.getPosts(userId,cut)).rows;
     const timeline = await Promise.all(
       posts.map(async (post) => {
         const hashtags = (await hashtagsRepository.getHashtagByIdPost(post.id))
