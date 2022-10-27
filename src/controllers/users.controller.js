@@ -127,29 +127,25 @@ async function unfollow(req, res) {
 
 }
 
-async function verifyFollower(req, res) {
+async function verifyFollowers(req, res) {
   const infoUser = res.locals.user;
 
-  const idUser = infoUser.id;
-
-  // const idPossibleFollower = Number(req.params.follower);
+  const followerId = infoUser.id;
 
   try {
 
-    const followerFound = (await usersRepository.verifyFollowerById(idUser)).rows;
+    const followersFound = (await usersRepository.verifyFollowersById(followerId)).rows;
 
-    const values = [];
+    console.log(followersFound);
 
-    followerFound.map((follower) => {
-      // console.log(follower.follower_id);
-      values.push(follower.follower_id);
+    const following = [];
+
+    followersFound.map((follower) => {
+      following.push(follower.user_id);
     })
 
-    // console.log(followerFound);
-    // console.log(values);
-
     return res.status(200).json({
-      followers_id: values
+      followers_id: following
     })
 
     
@@ -177,4 +173,4 @@ async function getFollowers(req, res) {
   }
 }
 
-export { getUserPosts, getUsersBySearch, follow, unfollow, verifyFollower, getFollowers };
+export { getUserPosts, getUsersBySearch, follow, unfollow, verifyFollowers, getFollowers };

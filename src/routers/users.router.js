@@ -5,7 +5,7 @@ import {
   getUsersBySearch,
   follow,
   unfollow,
-  verifyFollower
+  verifyFollowers
 } from "../controllers/users.controller.js";
 import { auth } from "../middlewares/authorization.middleware.js";
 
@@ -16,6 +16,6 @@ router.get("/followers/user", auth, getFollowers);
 router.get("/search/:name", auth, getUsersBySearch);
 router.post("/follow", auth, follow);
 router.post("/unfollow", auth, unfollow);
-router.get("/verifyFollower", auth, verifyFollower)
+router.get("/verifyFollowers", auth, verifyFollowers)
 
 export default router;
