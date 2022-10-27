@@ -44,7 +44,7 @@ const deletePostHashtag = async (postId) => {
 const getPosts = async (followerId) => {
   return connection.query(
     `SELECT t1.id AS user_id, t1.username, t1.image, 
-  posts.id, posts.link, posts.description, posts.created_at,
+  posts.id, posts.link, posts.description, posts.created_at, COALESCE(n1.repost_number, 0) AS repost_count,
   ARRAY_REMOVE(
     ARRAY_AGG(t2.username 
       ORDER BY likes.id DESC), NULL) AS likes
@@ -55,9 +55,15 @@ const getPosts = async (followerId) => {
   ON posts.id = likes.post_id
   LEFT JOIN users AS t2
   ON likes.user_id = t2.id
+  LEFT JOIN (
+    SELECT shares.post_id, COUNT(post_id) AS repost_number
+      FROM shares
+    JOIN posts ON shares.post_id=posts.id
+    GROUP BY post_id
+    ) n1 ON n1.post_id=posts.id
   WHERE t1.id IN ( SELECT user_id FROM followers WHERE follower_id = $1 )
   OR t1.id IN ( SELECT users.id FROM users WHERE users.id = $1 )
-  GROUP BY t1.id, posts.id 
+  GROUP BY t1.id, posts.id, n1.repost_number
   ORDER BY posts.created_at DESC
   LIMIT 20;`,
     [followerId]
