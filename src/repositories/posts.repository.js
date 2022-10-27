@@ -41,7 +41,7 @@ const deletePostHashtag = async (postId) => {
   );
 };
 
-const getPosts = async (followerId) => {
+const getPosts = async (followerId, cut) => {
   return connection.query(
     `SELECT t1.id AS user_id, t1.username, t1.image, 
   posts.id, posts.link, posts.description, posts.created_at, COALESCE(n1.repost_number, 0) AS repost_count,
@@ -64,9 +64,9 @@ const getPosts = async (followerId) => {
   WHERE t1.id IN ( SELECT user_id FROM followers WHERE follower_id = $1 )
   OR t1.id IN ( SELECT users.id FROM users WHERE users.id = $1 )
   GROUP BY t1.id, posts.id, n1.repost_number
-  ORDER BY posts.created_at DESC
+  ORDER BY posts.id DESC OFFSET $2
   LIMIT 20;`,
-    [followerId]
+    [followerId, cut]
   );
 };
 

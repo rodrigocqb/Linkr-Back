@@ -35,9 +35,10 @@ const newPost = async (req, res) => {
 
 async function getTimeline(req, res) {
   const userId = res.locals.session;
-
+  const cut = req.query.cut;
+  console.log(cut);
   try {
-    const posts = (await postRepository.getPosts(userId)).rows;
+    const posts = (await postRepository.getPosts(userId, cut)).rows;
     const shares = (await sharesRepository.getSharedPosts(userId)).rows;
     posts.push(...shares)
     posts.sort((a, b) => { return new Date(b.created_at).getTime() - new Date(a.created_at).getTime() }).slice(0, 20)
