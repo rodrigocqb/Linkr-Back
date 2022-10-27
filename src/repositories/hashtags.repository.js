@@ -21,7 +21,7 @@ async function getTrends(){
   GROUP BY hashtags.name ORDER BY COUNT(posts.id) DESC LIMIT 10
 `);
 }
-async function getPostsByHashtags(hashtag) {
+async function getPostsByHashtags(hashtag,cut) {
   return connection.query(
     `SELECT t1.id AS user_id, t1.username, t1.image, 
     posts.id, posts.link, posts.description,
@@ -40,8 +40,8 @@ async function getPostsByHashtags(hashtag) {
     WHERE hashtags.name = $1
     GROUP BY t1.id, posts.id 
     ORDER BY posts.id DESC
-    LIMIT 20;`,
-    [hashtag]
+    OFFSET $2 LIMIT 20`,
+    [hashtag,cut]
   );
 }
 const insertNewHashtag = async (name) => {
