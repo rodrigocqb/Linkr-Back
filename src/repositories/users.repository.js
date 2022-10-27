@@ -50,4 +50,42 @@ async function getUsersFollows(userId) {
   );
 }
 
-export { getUserById, getUserPostsById, getUsersByName, getUsersFollows };
+async function followUser(followerId,  userId) {
+  return connection.query(
+    `
+      INSERT INTO followers (follower_id, user_id) 
+      VALUES ($1, $2)
+    `,
+    [ followerId, userId ]
+  );
+}
+
+async function unfollowUser( unfollowerId, userId) {
+  return connection.query(
+    `
+      DELETE FROM followers
+      WHERE follower_id = $1 AND user_id = $2
+    `,
+    [ unfollowerId, userId     ]
+  );
+}
+
+async function verifyFollowersById(followerId) {
+  return connection.query(
+    `
+      SELECT user_id FROM followers
+      WHERE follower_id = $1
+    `,
+    [ followerId ]
+  )
+}
+
+export { 
+  getUserById, 
+  getUserPostsById, 
+  getUsersByName, 
+  getUsersFollows, 
+  followUser, 
+  unfollowUser,
+  verifyFollowersById
+};
