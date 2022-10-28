@@ -17,7 +17,7 @@ async function getUserPosts(req, res) {
     if (!user) {
       return notFoundResponse(res);
     }
-    const posts = (await usersRepository.getUserPostsById(id,cut)).rows;
+    const posts = (await usersRepository.getUserPostsById(id, cut)).rows;
 
     const userTimeline = await Promise.all(
       posts.map(async (post) => {
@@ -60,13 +60,13 @@ async function follow(req, res) {
 
   const userId = req.body.id;
 
-  if(followerId === userId) return res.status(422).json({
+  if (followerId === userId) return res.status(422).json({
     message: "You cannot perform this operation!"
   });
 
   const infoFollowedUser = await connection.query(`
       SELECT * FROM users WHERE id = $1
-    `, [ userId ]);
+    `, [userId]);
 
   const followedUser = infoFollowedUser.rows[0];
 
@@ -77,11 +77,11 @@ async function follow(req, res) {
     return res.status(200).json({
       message: `You started following ${followedUser.username}`
     })
-    
+
   } catch (error) {
-    
+
     console.log(error);
-    
+
     return res.status(500).json({
       message: `Error trying to follow user ${followedUser.username}`
     })
@@ -98,13 +98,13 @@ async function unfollow(req, res) {
 
   const userId = req.body.id;
 
-  if(unfollowerId === userId) return res.status(422).json({
+  if (unfollowerId === userId) return res.status(422).json({
     message: "You cannot perform this operation!"
   });
 
   const infoUnfollowedUser = await connection.query(`
       SELECT * FROM users WHERE id = $1
-    `, [ userId ]);
+    `, [userId]);
 
   const unfollowedUser = infoUnfollowedUser.rows[0];
 
@@ -115,11 +115,11 @@ async function unfollow(req, res) {
     return res.status(200).json({
       message: `You unfollowed ${unfollowedUser.username}`
     })
-    
+
   } catch (error) {
-    
+
     console.log(error);
-    
+
     return res.status(500).json({
       message: `Error trying to unfollow the user ${unfollowedUser.username}`
     })
@@ -137,8 +137,6 @@ async function verifyFollowers(req, res) {
 
     const followersFound = (await usersRepository.verifyFollowersById(followerId)).rows;
 
-    console.log(followersFound);
-
     const following = [];
 
     followersFound.map((follower) => {
@@ -149,11 +147,11 @@ async function verifyFollowers(req, res) {
       followers_id: following
     })
 
-    
+
   } catch (error) {
-    
+
     console.log(error);
-    
+
     return res.status(500).json({
       message: error
     })
