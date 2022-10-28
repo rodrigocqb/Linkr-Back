@@ -19,7 +19,7 @@ async function getUserPosts(req, res) {
       return notFoundResponse(res);
     }
     let posts = (await usersRepository.getUserPostsById(id)).rows;
-    const shares = (await sharesRepository.getSharedPostsById(id)).rows;
+    const shares = (await sharesRepository.getSharedPostsUserById(id)).rows;
     posts.push(...shares);
     posts = posts
       .sort((a, b) => {

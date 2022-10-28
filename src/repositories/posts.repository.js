@@ -115,6 +115,7 @@ const deletePostById = async (id) => {
   await connection.query(`DELETE FROM shares WHERE post_id = $1`, [id]);
   return await connection.query(`DELETE FROM posts WHERE id=$1;`, [id]);
 };
+
 const likePost = async ({ postId, userId }) => {
   return connection.query(
     `INSERT INTO likes (post_id, user_id) VALUES ($1, $2);`,
