@@ -6,13 +6,14 @@ const getHashtagByName = async (name) => {
   ]);
 };
 const getHashtagByIdPost = async (id) => {
-  return await connection.query(`SELECT COALESCE(ARRAY_AGG(hashtags.name),'{}') 
+  return await connection.query(
+    `SELECT COALESCE(ARRAY_AGG(hashtags.name),'{}') 
   AS hashtag FROM hashtags LEFT JOIN 
   posts_hashtags ON posts_hashtags.hashtag_id = hashtags.id 
   LEFT JOIN posts ON posts.id = posts_hashtags.post_id 
-  WHERE posts_hashtags.post_id = $1;`, [
-    id,
-  ]);
+  WHERE posts_hashtags.post_id = $1;`,
+    [id]
+  );
 };
 async function getTrends() {
   return connection.query(`SELECT hashtags.name FROM hashtags 
@@ -45,7 +46,7 @@ async function getPostsByHashtags(hashtag, cut) {
       ) n1 ON n1.post_id=posts.id
     WHERE hashtags.name = $1
     GROUP BY t1.id, posts.id, n1.repost_number
-    ORDER BY posts.created_at
+    ORDER BY posts.created_at DESC
     OFFSET $2 LIMIT 20`,
     [hashtag, cut]
   );
@@ -63,6 +64,5 @@ const hashtagsRepository = {
   getHashtagByIdPost,
   insertNewHashtag,
 };
-
 
 export { hashtagsRepository };

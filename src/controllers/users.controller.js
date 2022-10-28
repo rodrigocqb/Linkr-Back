@@ -18,10 +18,10 @@ async function getUserPosts(req, res) {
     if (!user) {
       return notFoundResponse(res);
     }
-    const posts = (await usersRepository.getUserPostsById(id)).rows;
+    let posts = (await usersRepository.getUserPostsById(id)).rows;
     const shares = (await sharesRepository.getSharedPostsById(id)).rows;
     posts.push(...shares);
-    posts
+    posts = posts
       .sort((a, b) => {
         return (
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
