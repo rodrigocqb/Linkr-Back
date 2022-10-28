@@ -36,8 +36,33 @@ const newPost = async (req, res) => {
 async function getTimeline(req, res) {
   const userId = res.locals.session;
   const cut = req.query.cut;
+  const time = req.query.time;
 
   try {
+    if (time) {
+      const posts = (await postRepository.getNewPosts(userId, time)).rows;
+      const shares = (await sharesRepository.getNewSharedPosts(userId, time))
+        .rows;
+      posts.push(...shares);
+      posts.sort((a, b) => {
+        return (
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+      });
+
+      const timeline = await Promise.all(
+        posts.map(async (post) => {
+          const hashtags = (
+            await hashtagsRepository.getHashtagByIdPost(post.id)
+          ).rows[0]?.hashtag;
+          const comments = (await commentRepository.getComments(post.id)).rows;
+          return { ...post, hashtags, comments };
+        })
+      );
+
+      return okResponse(res, timeline);
+    }
+
     const posts = (await postRepository.getPosts(userId)).rows;
     const shares = (await sharesRepository.getSharedPosts(userId)).rows;
     posts.push(...shares);

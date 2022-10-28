@@ -69,6 +69,35 @@ const getPosts = async (followerId) => {
   );
 };
 
+const getNewPosts = async (followerId, time) => {
+  return connection.query(
+    `
+    SELECT t1.id AS user_id, t1.username, t1.image, 
+  posts.id, posts.link, posts.description, posts.created_at, COALESCE(n1.repost_number, 0) AS repost_count,
+  ARRAY_REMOVE(
+    ARRAY_AGG(t2.username 
+      ORDER BY likes.id DESC), NULL) AS likes
+  FROM posts 
+  JOIN users AS t1
+  ON posts.user_id = t1.id
+  LEFT JOIN likes
+  ON posts.id = likes.post_id
+  LEFT JOIN users AS t2
+  ON likes.user_id = t2.id
+  LEFT JOIN (
+    SELECT shares.post_id, COUNT(post_id) AS repost_number
+      FROM shares
+    JOIN posts ON shares.post_id=posts.id
+    GROUP BY post_id
+    ) n1 ON n1.post_id=posts.id
+  WHERE (t1.id IN ( SELECT user_id FROM followers WHERE follower_id = $1 )
+  OR t1.id IN ( SELECT users.id FROM users WHERE users.id = $1 ))
+  AND posts.created_at < $2
+  ORDER BY posts.created_at;`,
+    [followerId, time]
+  );
+};
+
 const editPostById = async ({ id, description }) => {
   return await connection.query(
     `
@@ -111,6 +140,7 @@ const postRepository = {
   likePost,
   dislikePost,
   getPostById,
+  getNewPosts,
 };
 
 export { postRepository };
