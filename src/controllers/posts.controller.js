@@ -156,13 +156,13 @@ async function dislikePosts(req, res) {
   }
 }
 
-async function getNow(req, res) {
+export async function getNow(req, res) {
   try {
-    const { rows: TIMESTAMP } = await postRepository.getTime();
-    console.log(TIMESTAMP[0].now);
-    return okResponse(res, TIMESTAMP[0].now);
-  } catch (error) {
-    return serverError(res);
+      const { rows: timestamp } = await postRepository.getTimeStamp();
+      return res.send(timestamp[0].timezone)
+  }
+  catch {
+      return res.sendStatus(500)
   }
 }
 
@@ -173,5 +173,5 @@ export {
   dislikePosts,
   editPost,
   deletePost,
-  getNow,
+ 
 };

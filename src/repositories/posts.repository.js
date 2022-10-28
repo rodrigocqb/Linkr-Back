@@ -129,9 +129,10 @@ const dislikePost = async ({ postId, userId }) => {
   );
 };
 
-const getTime = async () => {
-  return connection.query(`select now()::timestamp without time zone;`);
-};
+async function getTimeStamp() {
+  return connection.query(`SELECT now() AT TIME ZONE 'UTC6'`);
+}
+
 
 const postRepository = {
   insertPost,
@@ -146,7 +147,7 @@ const postRepository = {
   dislikePost,
   getPostById,
   getNewPosts,
-  getTime,
+  getTimeStamp,
 };
 
 export { postRepository };

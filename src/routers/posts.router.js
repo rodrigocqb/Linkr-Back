@@ -7,12 +7,13 @@ import {
   newPost,
   editPost,
   deletePost,
-  getNow,
+  getNow
 } from "../controllers/posts.controller.js";
 import { auth } from "../middlewares/authorization.middleware.js";
 import checkPostData from "../middlewares/checkPostData.middleware.js";
 import { schemaMiddleware } from "../middlewares/schema.middleware.js";
 import { editSchema, postSchema } from "../schemas/post.schema.js";
+
 
 const router = Router();
 
