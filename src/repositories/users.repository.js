@@ -8,10 +8,10 @@ async function getUserById(id) {
   );
 }
 
-async function getUserPostsById(id,cut) {
+async function getUserPostsById(id, cut) {
   return connection.query(
     `SELECT t1.id AS user_id, t1.username, t1.image, 
-    posts.id, posts.link, posts.description,
+    posts.id, posts.link, posts.description, COALESCE(n1.repost_number, 0) AS repost_count,
     ARRAY_REMOVE(
       ARRAY_AGG(t2.username 
         ORDER BY likes.id DESC), NULL) AS likes
@@ -22,11 +22,17 @@ async function getUserPostsById(id,cut) {
     ON posts.id = likes.post_id
     LEFT JOIN users AS t2
     ON likes.user_id = t2.id
+    LEFT JOIN (
+      SELECT shares.post_id, COUNT(post_id) AS repost_number
+        FROM shares
+      JOIN posts ON shares.post_id=posts.id
+      GROUP BY post_id
+      ) n1 ON n1.post_id=posts.id
     WHERE t1.id = $1
-    GROUP BY t1.id, posts.id
+    GROUP BY t1.id, posts.id, n1.repost_number
     ORDER BY posts.id DESC
     OFFSET $2 LIMIT 20`,
-    [id,cut]
+    [id, cut]
   );
 }
 
@@ -50,23 +56,23 @@ async function getUsersFollows(userId) {
   );
 }
 
-async function followUser(followerId,  userId) {
+async function followUser(followerId, userId) {
   return connection.query(
     `
       INSERT INTO followers (follower_id, user_id) 
       VALUES ($1, $2)
     `,
-    [ followerId, userId ]
+    [followerId, userId]
   );
 }
 
-async function unfollowUser( unfollowerId, userId) {
+async function unfollowUser(unfollowerId, userId) {
   return connection.query(
     `
       DELETE FROM followers
       WHERE follower_id = $1 AND user_id = $2
     `,
-    [ unfollowerId, userId     ]
+    [unfollowerId, userId]
   );
 }
 
@@ -76,16 +82,16 @@ async function verifyFollowersById(followerId) {
       SELECT user_id FROM followers
       WHERE follower_id = $1
     `,
-    [ followerId ]
+    [followerId]
   )
 }
 
-export { 
-  getUserById, 
-  getUserPostsById, 
-  getUsersByName, 
-  getUsersFollows, 
-  followUser, 
+export {
+  getUserById,
+  getUserPostsById,
+  getUsersByName,
+  getUsersFollows,
+  followUser,
   unfollowUser,
   verifyFollowersById
 };

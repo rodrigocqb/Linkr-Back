@@ -36,7 +36,7 @@ const newPost = async (req, res) => {
 async function getTimeline(req, res) {
   const userId = res.locals.session;
   const cut = req.query.cut;
-  console.log(cut);
+
   try {
     const posts = (await postRepository.getPosts(userId, cut)).rows;
     const shares = (await sharesRepository.getSharedPosts(userId)).rows;
