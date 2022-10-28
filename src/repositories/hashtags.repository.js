@@ -24,7 +24,7 @@ async function getTrends() {
 async function getPostsByHashtags(hashtag, cut) {
   return connection.query(
     `SELECT t1.id AS user_id, t1.username, t1.image, 
-    posts.id, posts.link, posts.description, COALESCE(n1.repost_number, 0) AS repost_count,
+    posts.id, posts.link, posts.description, posts.created_at, COALESCE(n1.repost_number, 0) AS repost_count,
     ARRAY_REMOVE(
       ARRAY_AGG(t2.username 
         ORDER BY likes.id DESC), NULL) AS likes
@@ -45,7 +45,7 @@ async function getPostsByHashtags(hashtag, cut) {
       ) n1 ON n1.post_id=posts.id
     WHERE hashtags.name = $1
     GROUP BY t1.id, posts.id, n1.repost_number
-    ORDER BY posts.id DESC
+    ORDER BY posts.created_at
     OFFSET $2 LIMIT 20`,
     [hashtag, cut]
   );

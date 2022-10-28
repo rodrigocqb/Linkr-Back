@@ -64,7 +64,7 @@ const getPosts = async (followerId, cut) => {
   WHERE t1.id IN ( SELECT user_id FROM followers WHERE follower_id = $1 )
   OR t1.id IN ( SELECT users.id FROM users WHERE users.id = $1 )
   GROUP BY t1.id, posts.id, n1.repost_number
-  ORDER BY posts.id DESC OFFSET $2
+  ORDER BY posts.created_at OFFSET $2
   LIMIT 20;`,
     [followerId, cut]
   );
@@ -83,6 +83,7 @@ const deletePostById = async (id) => {
   await connection.query(`DELETE FROM posts_hashtags WHERE post_id=$1;`, [id]);
   await connection.query(`DELETE FROM likes WHERE post_id=$1;`, [id]);
   await connection.query(`DELETE FROM comments WHERE post_id = $1`, [id]);
+  await connection.query(`DELETE FROM shares WHERE post_id = $1`, [id]);
   return await connection.query(`DELETE FROM posts WHERE id=$1;`, [id]);
 };
 const likePost = async ({ postId, userId }) => {
