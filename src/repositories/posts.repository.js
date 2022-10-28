@@ -93,6 +93,7 @@ const getNewPosts = async (followerId, time) => {
   WHERE (t1.id IN ( SELECT user_id FROM followers WHERE follower_id = $1 )
   OR t1.id IN ( SELECT users.id FROM users WHERE users.id = $1 ))
   AND posts.created_at < $2
+  GROUP BY t1.id, posts.id, n1.repost_number
   ORDER BY posts.created_at;`,
     [followerId, time]
   );
