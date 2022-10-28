@@ -66,17 +66,17 @@ async function unfollowUser( unfollowerId, userId) {
       DELETE FROM followers
       WHERE follower_id = $1 AND user_id = $2
     `,
-    [ unfollowerId, userId ]
+    [ unfollowerId, userId     ]
   );
 }
 
-async function verifyFollowerById(idUser) {
+async function verifyFollowersById(followerId) {
   return connection.query(
     `
-      SELECT follower_id FROM followers
-      WHERE user_id = $1
+      SELECT user_id FROM followers
+      WHERE follower_id = $1
     `,
-    [ idUser ]
+    [ followerId ]
   )
 }
 
@@ -87,5 +87,5 @@ export {
   getUsersFollows, 
   followUser, 
   unfollowUser,
-  verifyFollowerById
+  verifyFollowersById
 };
