@@ -40,6 +40,7 @@ async function getTimeline(req, res) {
   try {
     if (time) {
       const posts = (await postRepository.getNewPosts(userId, time)).rows;
+      console.log(posts);
       const shares = (await sharesRepository.getNewSharedPosts(userId, time))
         .rows;
       posts.push(...shares);

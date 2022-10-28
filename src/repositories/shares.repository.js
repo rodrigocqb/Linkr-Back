@@ -52,7 +52,7 @@ const getNewSharedPosts = async (followerId, time) => {
         ) n1 ON n1.post_id=posts.id
         WHERE (u1.id IN ( SELECT user_id FROM followers WHERE follower_id = $1 )
         OR u1.id IN ( SELECT users.id FROM users WHERE users.id = $1 ))
-        AND shares.created_at < $2
+        AND shares.created_at > TO_TIMESTAMP($2)
         GROUP BY u1.id, shares.post_id, shares.id, u2.id, posts.link, posts.description, n1.repost_number
         ORDER BY shares.created_at;`,
     [followerId, time]
