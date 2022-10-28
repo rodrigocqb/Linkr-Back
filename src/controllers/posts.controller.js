@@ -156,4 +156,22 @@ async function dislikePosts(req, res) {
   }
 }
 
-export { newPost, getTimeline, likePosts, dislikePosts, editPost, deletePost };
+export async function getNow(req, res) {
+  try {
+      const { rows: timestamp } = await postRepository.getTimeStamp();
+      return res.send(timestamp[0].timezone)
+  }
+  catch {
+      return res.sendStatus(500)
+  }
+}
+
+export {
+  newPost,
+  getTimeline,
+  likePosts,
+  dislikePosts,
+  editPost,
+  deletePost,
+ 
+};
