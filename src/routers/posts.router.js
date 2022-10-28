@@ -7,6 +7,7 @@ import {
   newPost,
   editPost,
   deletePost,
+  getNow,
 } from "../controllers/posts.controller.js";
 import { auth } from "../middlewares/authorization.middleware.js";
 import checkPostData from "../middlewares/checkPostData.middleware.js";
@@ -28,5 +29,6 @@ router.put(
   editPost
 );
 router.delete("/posts/:id", auth, checkPostData, deletePost);
+router.get("/time", auth, getNow);
 
 export default router;

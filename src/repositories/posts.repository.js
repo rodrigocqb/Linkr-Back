@@ -92,7 +92,7 @@ const getNewPosts = async (followerId, time) => {
     ) n1 ON n1.post_id=posts.id
   WHERE (t1.id IN ( SELECT user_id FROM followers WHERE follower_id = $1 )
   OR t1.id IN ( SELECT users.id FROM users WHERE users.id = $1 ))
-  AND posts.created_at > TO_TIMESTAMP($2)
+  AND posts.created_at > $2
   GROUP BY t1.id, posts.id, n1.repost_number
   ORDER BY posts.created_at;`,
     [followerId, time]
@@ -129,6 +129,10 @@ const dislikePost = async ({ postId, userId }) => {
   );
 };
 
+const getTime = async () => {
+  return connection.query(`select now()::timestamp without time zone;`);
+};
+
 const postRepository = {
   insertPost,
   getUsersPostsByUserId,
@@ -142,6 +146,7 @@ const postRepository = {
   dislikePost,
   getPostById,
   getNewPosts,
+  getTime,
 };
 
 export { postRepository };
