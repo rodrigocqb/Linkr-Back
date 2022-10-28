@@ -57,8 +57,9 @@ export async function getTrends(req, res) {
 
 export async function getPostsHashtags(req, res) {
   const { hashtag } = req.params;
+  const cut = req.query.cut;
   try {
-    const posts = (await hashtagsRepository.getPostsByHashtags(hashtag)).rows;
+    const posts = (await hashtagsRepository.getPostsByHashtags(hashtag,cut)).rows;
     const timeline = await Promise.all(
       posts.map(async (post) => {
         const hashtags = (await hashtagsRepository.getHashtagByIdPost(post.id))

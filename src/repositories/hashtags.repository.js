@@ -14,17 +14,17 @@ const getHashtagByIdPost = async (id) => {
     id,
   ]);
 };
-async function getTrends(){
+async function getTrends() {
   return connection.query(`SELECT hashtags.name FROM hashtags 
   LEFT JOIN posts_hashtags ON posts_hashtags.hashtag_id = hashtags.id  
   LEFT JOIN posts ON posts.id = posts_hashtags.post_id 
   GROUP BY hashtags.name ORDER BY COUNT(posts.id) DESC LIMIT 10
 `);
 }
-async function getPostsByHashtags(hashtag) {
+async function getPostsByHashtags(hashtag, cut) {
   return connection.query(
     `SELECT t1.id AS user_id, t1.username, t1.image, 
-    posts.id, posts.link, posts.description,
+    posts.id, posts.link, posts.description, COALESCE(n1.repost_number, 0) AS repost_count,
     ARRAY_REMOVE(
       ARRAY_AGG(t2.username 
         ORDER BY likes.id DESC), NULL) AS likes
@@ -37,11 +37,17 @@ async function getPostsByHashtags(hashtag) {
     ON posts.id = likes.post_id
     LEFT JOIN users AS t2
     ON likes.user_id = t2.id
+    LEFT JOIN (
+      SELECT shares.post_id, COUNT(post_id) AS repost_number
+        FROM shares
+      JOIN posts ON shares.post_id=posts.id
+      GROUP BY post_id
+      ) n1 ON n1.post_id=posts.id
     WHERE hashtags.name = $1
-    GROUP BY t1.id, posts.id 
+    GROUP BY t1.id, posts.id, n1.repost_number
     ORDER BY posts.id DESC
-    LIMIT 20;`,
-    [hashtag]
+    OFFSET $2 LIMIT 20`,
+    [hashtag, cut]
   );
 }
 const insertNewHashtag = async (name) => {
