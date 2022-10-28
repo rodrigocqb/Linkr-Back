@@ -1,7 +1,7 @@
 import connection from "../database/database.js";
 
 const getSharedPosts = async (followerId) => {
-    return await connection.query(`
+  return await connection.query(`
     SELECT shares.post_id as id, shares.id as shared_id, u2.id as user_id, u2.username, 
     posts.link, posts.description, shares.created_at, u1.id as shared_by_id, 
     u1.username as shared_by_username, COALESCE(n1.repost_number, 0) AS repost_count,
@@ -23,18 +23,18 @@ const getSharedPosts = async (followerId) => {
         WHERE u1.id IN ( SELECT user_id FROM followers WHERE follower_id = $1 )
         OR u1.id IN ( SELECT users.id FROM users WHERE users.id = $1 )
         GROUP BY u1.id, shares.post_id, shares.id, u2.id, posts.link, posts.description, n1.repost_number
-        ORDER BY shares.created_at DESC
+        ORDER BY shares.created_at
         LIMIT 20;`, [followerId])
 }
 
 const insertSharedPost = async ({ userId, postId }) => {
-    return await connection.query(`
+  return await connection.query(`
     INSERT INTO shares (user_id, post_id) VALUES ($1, $2)`, [userId, postId])
 }
 
 const sharesRepository = {
-    getSharedPosts,
-    insertSharedPost
+  getSharedPosts,
+  insertSharedPost
 }
 
 export default sharesRepository;
