@@ -37,7 +37,6 @@ async function getTimeline(req, res) {
   const userId = res.locals.session;
   const cut = req.query.cut;
   const time = req.query.time;
-
   try {
     if (time) {
       const posts = (await postRepository.getNewPosts(userId, time)).rows;
@@ -63,10 +62,10 @@ async function getTimeline(req, res) {
       return okResponse(res, timeline);
     }
 
-    const posts = (await postRepository.getPosts(userId)).rows;
+    let posts = (await postRepository.getPosts(userId)).rows;
     const shares = (await sharesRepository.getSharedPosts(userId)).rows;
     posts.push(...shares);
-    posts
+    posts = posts
       .sort((a, b) => {
         return (
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
