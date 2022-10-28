@@ -8,7 +8,7 @@ async function getUserById(id) {
   );
 }
 
-async function getUserPostsById(id, cut) {
+async function getUserPostsById(id) {
   return connection.query(
     `SELECT t1.id AS user_id, t1.username, t1.image, 
     posts.id, posts.link, posts.description, posts.created_at,  COALESCE(n1.repost_number, 0) AS repost_count,
@@ -30,9 +30,8 @@ async function getUserPostsById(id, cut) {
       ) n1 ON n1.post_id=posts.id
     WHERE t1.id = $1
     GROUP BY t1.id, posts.id, n1.repost_number
-    ORDER BY posts.created_at
-    OFFSET $2 LIMIT 20`,
-    [id, cut]
+    ORDER BY posts.created_at;`,
+    [id]
   );
 }
 
@@ -83,7 +82,7 @@ async function verifyFollowersById(followerId) {
       WHERE follower_id = $1
     `,
     [followerId]
-  )
+  );
 }
 
 export {
@@ -93,5 +92,5 @@ export {
   getUsersFollows,
   followUser,
   unfollowUser,
-  verifyFollowersById
+  verifyFollowersById,
 };
