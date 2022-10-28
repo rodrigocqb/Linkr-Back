@@ -59,7 +59,7 @@ const getNewSharedPosts = async (followerId, time) => {
   );
 };
 
-const getSharedPostsById = async (userId) => {
+const getSharedPostsUserById = async (userId) => {
   return await connection.query(
     `
     SELECT shares.post_id as id, shares.id as shared_id, u2.id as user_id, u2.username, 
@@ -95,11 +95,25 @@ const insertSharedPost = async ({ userId, postId }) => {
   );
 };
 
+const getSharedPostById = async (postId) => {
+  return await connection.query(`SELECT * FROM shares WHERE id = $1;`, [
+    postId,
+  ]);
+};
+
+const deleteSharePostById = async (id) => {
+  return await connection.query(`
+  DELETE FROM shares WHERE id=$1
+  `, [id])
+}
+
 const sharesRepository = {
   getSharedPosts,
   getNewSharedPosts,
-  getSharedPostsById,
+  getSharedPostsUserById,
   insertSharedPost,
+  getSharedPostById,
+  deleteSharePostById
 };
 
 export default sharesRepository;
